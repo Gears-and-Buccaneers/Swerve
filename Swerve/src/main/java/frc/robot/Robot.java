@@ -1,56 +1,345 @@
-/*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
-/* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
-/*----------------------------------------------------------------------------*/
+package org.usfirst.frc.team2972.robot;
 
-package frc.robot;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.AnalogGyro;
+import java.util.ArrayList;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Spark;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.CameraServer;
+import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc.AHRS.BoardAxis;
 
-/**
- * This is a sample program to demonstrate how to use a gyro sensor to make a
- * robot drive straight. This program uses a joystick to drive forwards and
- * backwards while the gyro is used for direction keeping.
- */
+
+
 public class Robot extends IterativeRobot {
-  private static final double kAngleSetpoint = 0.0;
-  private static final double kP = 0.005; // propotional turning constant
+	
+	final ControlMode PO = ControlMode.PercentOutput;
+	
+	final RobotUtil ru = new RobotUtil();
+    
+	Joystick pad, stick;
+    TalonSRX leftWheelTalon, rightWheelTalon,liftTalon1; 
+    Talon  liftTalon2, leftFeederTalon, rightFeederTalon;
+    
+    double rStart, autoStart, autoTime;
+	int gameData;
+	
+	//AHRS ahrs = new AHRS(SerialPort.Port.kUSB1);
+	AHRS ahrs = new AHRS(SerialPort.Port.kMXP, SerialDataType.kProcessedData, (byte)500);
+	//ahrs.enableLogging(true);
+	
 
-  // gyro calibration constant, may need to be adjusted;
-  // gyro value of 360 is set to correspond to one full revolution
-  private static final double kVoltsPerDegreePerSecond = 0.0128;
+	public Robot(){
+        
+try {
+			/***********************************************************************
+			 * navX-MXP:
+			 * - Communication via RoboRIO MXP (SPI, I2C, TTL UART) and USB.            
+			 * - See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface.
+			 * 
+			 * navX-Micro:
+			 * - Communication via I2C (RoboRIO MXP or Onboard) and USB.
+			 * - See http://navx-micro.kauailabs.com/guidance/selecting-an-interface.
+			 * 
+			 * Multiple navX-model devices on a single robot are supported.
+			 ************************************************************************/
+            //ahrs = new AHRS(SerialPort.Port.kUSB1); // Real Instantiation 
+            //ahrs = new AHRS(SerialPort.Port.kMXP, SerialDataType.kProcessedData, (byte)50);
+            ahrs.enableLogging(true);
+        } catch (RuntimeException ex ) {
+            DriverStation.reportError("Error instantiating navX MXP:  " + ex.getMessage(), true);
+		}
+	}
 
-  private static final int kLeftMotorPort = 0;
-  private static final int kRightMotorPort = 1;
-  private static final int kGyroPort = 0;
-  private static final int kJoystickPort = 0;
+    
 
-  private final DifferentialDrive m_myRobot
-      = new DifferentialDrive(new Spark(kLeftMotorPort),
-      new Spark(kRightMotorPort));
-  private final AnalogGyro m_gyro = new AnalogGyro(kGyroPort);
-  private final Joystick m_joystick = new Joystick(kJoystickPort);
+    
+    ArrayList<Double> autoLengths;
+    
+    //[leftWheel, rightWheel, lift, intake]
+    ArrayList<double[]> autoCommands;
+    
+    public void robotInit(){
+    	
+    	//CameraServer.getInstance().startAutomaticCapture();
+    	//CameraServer.getInstance().startAutomaticCapture();
 
-  @Override
-  public void robotInit() {
-    m_gyro.setSensitivity(kVoltsPerDegreePerSecond);
-  }
+    	//upperLimitSwitch = new DigitalInput(9);
+    	
+    	pad = new Joystick(0);
+    	stick = new Joystick(2);
+    	leftWheelTalon = new TalonSRX(6);
+    	rightWheelTalon = new TalonSRX(4);
+    	liftTalon1 = new TalonSRX(3);
+    	liftTalon2 = new Talon(2);
+    	
+    	leftFeederTalon = new Talon(0);
+    	rightFeederTalon = new Talon(1);
+    	 
+        double power = 0;
+    	leftWheelTalon.set(PO,power);
+    	rightWheelTalon.set(PO,power);
+    	liftTalon1.set(PO,power);
+    	liftTalon2.set(power);
+    	    	
+    	leftFeederTalon.set(power);
+		rightFeederTalon.set(power);
+		ahrs.enableLogging(true);
 
-  /**
-   * The motor speed is set from the joystick while the RobotDrive turning
-   * value is assigned from the error between the setpoint and the gyro angle.
-   */
-  @Override
-  public void teleopPeriodic() {
-    double turningValue = (kAngleSetpoint - m_gyro.getAngle()) * kP;
-    // Invert the direction of the turn if we are going backwards
-    turningValue = Math.copySign(turningValue, m_joystick.getY());
-    m_myRobot.arcadeDrive(m_joystick.getY(), turningValue);
-  }
+    	
+    	
+    	
+    	
+    }
+    
+    public void teleopInit(){
+		SmartDashboard.putNumber("R test", stick.getRawAxis(2));
+		rStart = stick.getRawAxis(2);
+    }
+    		  
+    public void teleopPeriodic() {
+    	
+    	//sd.putBoolean("Limit Switch", upperLimitSwitch.get());
+    	
+    	//y = forward and backward on Joystick
+    	//r = "turning" left/right on Joystick
+    	//t = throttle (.4 to 1)
+    	//up = lift going up on left trigger
+    	//down = lift going down on right trigger
+    	//in = feed going in on left bumper
+    	//out = feed going out on right bumper
+		//climbUp = climber going up on triangle	
+		
+		ahrs.enableLogging(true);
+
+    	
+    	SmartDashboard.putNumber("unproccessed t", stick.getRawAxis(3));
+    	double t = ru.stickToT(stick.getRawAxis(3));
+    	SmartDashboard.putNumber("proccessed t", t);
+    	
+    	double y = .9*t*-stick.getRawAxis(1);
+    	SmartDashboard.putNumber("y", -stick.getRawAxis(1));
+    	
+    	double r = stick.getRawAxis(2) - rStart;
+    	SmartDashboard.putNumber("r", stick.getRawAxis(2) - rStart);
+    	
+    	double up = (pad.getRawAxis(2));
+    	SmartDashboard.putNumber("up", up);
+    	
+    	double down = (pad.getRawAxis(3));
+    	SmartDashboard.putNumber("down", down);
+    	
+    	boolean in = pad.getRawButton(5);
+        boolean out = pad.getRawButton(6);
+        boolean rotate = pad.getRawButton(1);
+        SmartDashboard.putBoolean("in", in);
+        SmartDashboard.putBoolean("out", out);
+        
+         SmartDashboard.putBoolean(  "IMU_Connected",        ahrs.isConnected());
+         SmartDashboard.putBoolean(  "IMU_IsCalibrating",    ahrs.isCalibrating());
+         SmartDashboard.putNumber(   "IMU_Yaw",              ahrs.getYaw());
+         SmartDashboard.putNumber(   "IMU_Pitch",            ahrs.getPitch());
+		 SmartDashboard.putNumber(   "IMU_Roll",             ahrs.getRoll());
+		 /* Display Processed Acceleration Data (Linear Acceleration, Motion Detect) */
+		 
+		 SmartDashboard.putNumber(   "IMU_Accel_X",          ahrs.getWorldLinearAccelX());
+		 SmartDashboard.putNumber(   "IMU_Accel_Y",          ahrs.getWorldLinearAccelY());
+		 SmartDashboard.putBoolean(  "IMU_IsMoving",         ahrs.isMoving());
+		 
+		 
+		 SmartDashboard.putNumber(   "Velocity_X",           ahrs.getVelocityX());
+		 SmartDashboard.putNumber(   "Velocity_Y",           ahrs.getVelocityY());
+		
+		 
+		 
+		 SmartDashboard.putNumber(   "RawGyro_X",            ahrs.getRawGyroX());
+		 SmartDashboard.putNumber(   "RawGyro_Y",            ahrs.getRawGyroY());
+		 SmartDashboard.putNumber(   "RawGyro_Z",            ahrs.getRawGyroZ());
+		 
+
+        leftWheelTalon.set(PO, ru.normalize(y+.65*r));
+        rightWheelTalon.set(PO, ru.normalize(y-.65*r));
+        
+//        if(!upperLimitSwitch.get()) {
+        	//liftTalon1.set(PO,.2*ru.normalize(up-.75*down) + .1);
+        	//liftTalon2.set(.2*ru.normalize(up-.75*down) + .1);
+//        }else {
+        	liftTalon1.set(PO,.6*ru.normalize(up-.7*down)+.1);
+        	liftTalon2.set(.6*ru.normalize(up-.7*down)+.1);
+//        }
+	    	
+	    leftFeederTalon.set( ((in)?1:0) - ((out)?1:0));
+	    rightFeederTalon.set( ((in)?1:0) - ((out)?1:0));
+	    
+	    
+	    
+	}
+    
+    public void testPeriodic() {
+    	leftWheelTalon.set(PO, .4);
+    	rightWheelTalon.set(PO, .4);
+    }
+    
+    public void autonomousInit() {
+    	
+    	autoStart = System.currentTimeMillis();
+    	autoTime = 0;
+    	String raw = DriverStation.getInstance().getGameSpecificMessage();
+    	gameData = (raw.charAt(0) == 'L')?-1:1;
+    	
+    	
+    	SmartDashboard.putNumber("Switch Side", gameData); 
+    	SmartDashboard.putNumber("Robot Placement", ru.pos);
+    	
+//    	autoLengths = new ArrayList<Double>();
+//    	autoCommands = new ArrayList<double[]>();
+//    	
+//    	autoLengths.add(ru.initialForwardTime);
+//    	autoCommands.add(ru.goForward);  
+//    	
+//    	autoLengths.add(ru.initialForwardTime+50);
+//    	autoCommands.add(ru.goBackward);
+//    	
+//    	autoLengths.add(ru.initialForwardTime);
+//    	autoCommands.add(ru.goForward);
+//    	
+////    	autoLengths.add(ru.toSwitchTime);
+////    	autoCommands.add(ru.goForward);
+////    	
+////    	if()
+//    	
+//    	if(ru.pos == 0) {
+//    		autoLengths.add(ru.turn90Time);
+//    		autoCommands.add(ru.turn(gameData));
+//    		
+//    		autoLengths.add(ru.centerToSideTime);
+//    		autoCommands.add(ru.goForward);
+//    		
+//    		autoLengths.add(ru.turn90Time);
+//    		autoCommands.add(ru.turn(-gameData));
+//    		
+//    		ru.pos = gameData;
+//    	}
+//    	
+//    	autoLengths.add(ru.toSwitchTime);
+//    	autoCommands.add(ru.goForward);
+//    	
+//    	if(gameData == ru.pos) {
+//    		
+//    		autoLengths.add(ru.liftToSwitchTime);
+//        	autoCommands.add(ru.goUpToSwitch);
+//    		
+//    		autoLengths.add(ru.turn90Time);
+//    		autoCommands.add(ru.turn(-gameData));
+//    		
+//    		autoLengths.add(ru.sideToSwitchTime);
+//    		autoCommands.add(ru.goSlowForward);
+//    		
+//    	}else {
+//    		
+//    		autoLengths.add(ru.pastSwitchTime);
+//    		autoCommands.add(ru.goForward);
+//    		
+//    		autoLengths.add(ru.turn90Time);
+//    		autoCommands.add(ru.turn(gameData));
+//    		
+//    		autoLengths.add(ru.crossBehindSwitchTime);
+//    		autoCommands.add(ru.goForward);
+//    		
+//    		autoLengths.add(ru.turn90Time);
+//    		autoCommands.add(ru.turn(gameData));
+//    		
+//    		autoLengths.add(ru.backOfSwitchApproachTime);
+//    		autoCommands.add(ru.goSlowForward);
+//    	}
+//    	
+//    	autoLengths.add(ru.spitOutTime);
+//		autoCommands.add(ru.goSpitOut);
+//		
+//		autoLengths.add(ru.restTime);
+//		autoCommands.add(ru.STOP);
+    }
+    
+	public void autonomousPeriodic() {
+		
+		autoTime = System.currentTimeMillis() - autoStart;
+		SmartDashboard.putNumber("auto time", autoTime);
+		
+		if(autoTime< 2500) {
+			leftWheelTalon.set(PO, -.7);
+			rightWheelTalon.set(PO, -.7);
+		}
+		
+		
+//		if(autoTime < 2250) {
+//			leftWheelTalon.set(PO,.6);
+//			rightWheelTalon.set(PO, .6);
+//			//leftFeederTalon.set(0);
+//			//rightFeederTalon.set(0);	
+//		}else if(autoTime<2750) {
+//			leftWheelTalon.set(PO,0);
+//			rightWheelTalon.set(PO, 0);
+////			leftFeederTalon.set(0);
+////			rightFeederTalon.set(0);
+//		}else if(autoTime < 4000) {	
+//			leftWheelTalon.set(PO, 0);
+//			rightWheelTalon.set(PO, 0);
+//			liftTalon1.set(PO, .7);
+//			liftTalon2.set(.7);
+////			leftFeederTalon.set(0);
+////			rightFeederTalon.set(0);
+//		}else if(gameData == ru.pos) {
+//			if(autoTime < 4750) {
+//				leftWheelTalon.set(PO, gameData* -.6);
+//				rightWheelTalon.set(PO, gameData* .6);
+//				liftTalon1.set(PO, 0);
+//				liftTalon2.set(0);
+//				leftFeederTalon.set(0);
+//				rightFeederTalon.set(0);
+//			}else if(autoTime < 5500) {
+//				leftWheelTalon.set(PO, .7);
+//				rightWheelTalon.set(PO, .7);
+//				liftTalon1.set(PO, 0);
+//				liftTalon2.set(0);
+//				leftFeederTalon.set(0);
+//				rightFeederTalon.set(0);
+//			}else {
+//				leftWheelTalon.set(PO, 0);
+//				rightWheelTalon.set(PO, 0);
+//				liftTalon1.set(PO, .1);
+//				liftTalon2.set(.1);
+//				leftFeederTalon.set(1);
+//				rightFeederTalon.set(1);
+//			}	
+//		}else {
+//			leftWheelTalon.set(PO, 0);
+//			rightWheelTalon.set(PO, 0);
+//			liftTalon1.set(PO, .1);
+//			liftTalon2.set(.1);
+//			leftFeederTalon.set(0);
+//			rightFeederTalon.set(0);
+//		}
+		
+//		double timeSum = 0;
+//		int index = 0;
+//		
+//		for(double length : autoLengths) {
+//			if(autoTime < timeSum) break;
+//			timeSum += length;
+//			index++;
+//		}
+//		
+//		double[] powers = autoCommands.get(index);
+//		
+//		leftWheelTalon.set(PO, powers[0]);
+//		rightWheelTalon.set(PO, powers[1]);
+//		liftTalon1.set(PO, powers[2]);
+//		liftTalon2.set(powers[2]);
+//		leftFeederTalon.set(powers[3]);
+//		rightFeederTalon.set(-powers[3]);
+	}
 }
