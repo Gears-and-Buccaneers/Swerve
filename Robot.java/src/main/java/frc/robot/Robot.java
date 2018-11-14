@@ -135,12 +135,12 @@ public class Robot extends IterativeRobot {
         	//liftTalon1.set(PO,.2*ru.normalize(up-.75*down) + .1);
         	//liftTalon2.set(.2*ru.normalize(up-.75*down) + .1);
 //        }else {
-        	liftTalon1.set(PO,.6*ru.normalize(up-.7*down)+.1);
-        	liftTalon2.set(.6*ru.normalize(up-.7*down)+.1);
+//        	liftTalon1.set(PO,.6*ru.normalize(up-.7*down)+.1);
+//        	liftTalon2.set(.6*ru.normalize(up-.7*down)+.1);
 //        }
 	    	
-	    leftFeederTalon.set( ((in)?1:0) - ((out)?1:0));
-	    rightFeederTalon.set( ((in)?1:0) - ((out)?1:0));
+//	    leftFeederTalon.set( ((in)?1:0) - ((out)?1:0));
+//	    rightFeederTalon.set( ((in)?1:0) - ((out)?1:0));
 	    
 	    
 	    
