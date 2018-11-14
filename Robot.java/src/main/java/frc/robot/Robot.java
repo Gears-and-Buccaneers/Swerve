@@ -47,23 +47,31 @@ public class Robot extends IterativeRobot {
     	//upperLimitSwitch = new DigitalInput(9);
     	
     	pad = new Joystick(0);
-    	stick = new Joystick(2);
-    	leftWheelTalon = new TalonSRX(6);
-    	rightWheelTalon = new TalonSRX(4);
-    	liftTalon1 = new TalonSRX(3);
-    	liftTalon2 = new Talon(2);
+		
+		frontLeftRotator = new TalonSRX(4);
+		frontRightRotator = new TalonSRX(6);
+		backLeftRotator = new TalonSRX(5);
+		backRightRotator = new TalonSRX(7);
+
+		frontRightDriver = new Talon(1);
+		frontLeftDriver = new TalonSRX(3);
+		backRightDriver = new Talon(0);
+		backLeftDriver = new Talon(2);
     	
-    	leftFeederTalon = new Talon(0);
-    	rightFeederTalon = new Talon(1);
     	 
-        double power = 0;
-    	leftWheelTalon.set(PO,power);
-    	rightWheelTalon.set(PO,power);
-    	liftTalon1.set(PO,power);
-    	liftTalon2.set(power);
-    	    	
-    	leftFeederTalon.set(power);
-    	rightFeederTalon.set(power);
+		double power = 0;
+		
+    	// Example SRX : leftWheelTalon.set(PO,power);
+		
+		frontLeftRotator.set(PO,power);
+		frontRightRotator.set(PO,power);
+		backLeftRotator.set(PO,power);
+		backRightDriver.set(PO,power);
+
+		frontRightDriver.set(power);
+		frontLeftDriver.set(power);
+		backLeftDriver.set(power);
+		backRightDriver.set(power);
     	
     	
     	
