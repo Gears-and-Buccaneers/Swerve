@@ -108,10 +108,10 @@ public class Robot extends IterativeRobot {
 		backLeftRotator.set(PO, -.4);
 		backRightRotator.set(PO, .4);
 
-		SmartDashboard.putNumber("Front Left Encoder Position", frontLeftEncoder.getDirection());
-		SmartDashboard.putNumber("Front Left Encoder Position", frontRightEncoder.getDirection());
-		SmartDashboard.putNumber("Front Left Encoder Position", backLeftEncoder.getDirection());
-		SmartDashboard.putNumber("Front Left Encoder Position", backRightEncoder.getDirection());
+		// SmartDashboard.putNumber("Front Left Encoder Position", frontLeftEncoder.getDirection());
+		// SmartDashboard.putNumber("Front Left Encoder Position", frontRightEncoder.getDirection());
+		// SmartDashboard.putNumber("Front Left Encoder Position", backLeftEncoder.getDirection());
+		// SmartDashboard.putNumber("Front Left Encoder Position", backRightEncoder.getDirection());
 
     }
     
