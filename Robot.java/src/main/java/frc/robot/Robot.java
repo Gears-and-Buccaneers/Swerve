@@ -69,25 +69,25 @@ public class Robot extends IterativeRobot {
 		frontLeftEncoder.setSamplesToAverage(7);
 
 		Encoder frontRightEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
-		frontLeftEncoder.setMaxPeriod(.1);
-		frontLeftEncoder.setMinRate(10);
-		frontLeftEncoder.setDistancePerPulse(5);
-		frontLeftEncoder.setReverseDirection(true);
-		frontLeftEncoder.setSamplesToAverage(7);
+		frontRightEncoder.setMaxPeriod(.1);
+		frontRightEncoder.setMinRate(10);
+		frontRightEncoder.setDistancePerPulse(5);
+		frontRightEncoder.setReverseDirection(true);
+		frontRightEncoder.setSamplesToAverage(7);
 
 		Encoder backLeftEncoder = new Encoder(6, 7, false, Encoder.EncodingType.k4X);
-		frontLeftEncoder.setMaxPeriod(.1);
-		frontLeftEncoder.setMinRate(10);
-		frontLeftEncoder.setDistancePerPulse(5);
-		frontLeftEncoder.setReverseDirection(true);
-		frontLeftEncoder.setSamplesToAverage(7);
+		backLeftEncoder.setMaxPeriod(.1);
+		backLeftEncoder.setMinRate(10);
+		backLeftEncoder.setDistancePerPulse(5);
+		backLeftEncoder.setReverseDirection(true);
+		backLeftEncoder.setSamplesToAverage(7);
 
 		Encoder backRightEncoder = new Encoder(4, 5, false, Encoder.EncodingType.k4X);
-		frontLeftEncoder.setMaxPeriod(.1);
-		frontLeftEncoder.setMinRate(10);
-		frontLeftEncoder.setDistancePerPulse(5);
-		frontLeftEncoder.setReverseDirection(true);
-		frontLeftEncoder.setSamplesToAverage(7);
+		backRightEncoder.setMaxPeriod(.1);
+		backRightEncoder.setMinRate(10);
+		backRightEncoder.setDistancePerPulse(5);
+		backRightEncoder.setReverseDirection(true);
+		backRightEncoder.setSamplesToAverage(7);
     }
     
     public void teleopInit(){
@@ -109,6 +109,10 @@ public class Robot extends IterativeRobot {
 		backRightRotator.set(PO, .4);
 
 		SmartDashboard.putNumber("Front Left Encoder Position", frontLeftEncoder.getDirection());
+		SmartDashboard.putNumber("Front Left Encoder Position", frontRightEncoder.getDirection());
+		SmartDashboard.putNumber("Front Left Encoder Position", backLeftEncoder.getDirection());
+		SmartDashboard.putNumber("Front Left Encoder Position", backRightEncoder.getDirection());
+
     }
     
     public void autonomousInit() {
