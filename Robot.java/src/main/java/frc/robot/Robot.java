@@ -68,7 +68,7 @@ public class Robot extends IterativeRobot {
 		frontLeftEncoder.setReverseDirection(true);
 		frontLeftEncoder.setSamplesToAverage(7);
 
-		Encoder frontRightEncoder = new Encoder(0, 1, false, Encoder.EncodingType.k4X);
+		Encoder frontRightEncoder = new Encoder(0, 1, true, Encoder.EncodingType.k4X);
 		frontRightEncoder.setMaxPeriod(.1);
 		frontRightEncoder.setMinRate(10);
 		frontRightEncoder.setDistancePerPulse(5);
@@ -82,7 +82,7 @@ public class Robot extends IterativeRobot {
 		backLeftEncoder.setReverseDirection(true);
 		backLeftEncoder.setSamplesToAverage(7);
 
-		Encoder backRightEncoder = new Encoder(4, 5, false, Encoder.EncodingType.k4X);
+		Encoder backRightEncoder = new Encoder(4, 5, true, Encoder.EncodingType.k4X);
 		backRightEncoder.setMaxPeriod(.1);
 		backRightEncoder.setMinRate(10);
 		backRightEncoder.setDistancePerPulse(5);
@@ -98,6 +98,12 @@ public class Robot extends IterativeRobot {
 	}
     
     public void testPeriodic() {
+		SmartDashboard.putNumber("Rotation", ahrs.getYaw());
+		SmartDashboard.putNumber("Encoder FL Position", frontLeftEncoder.getPosition());
+		SmartDashboard.putNumber("Encoder BR Position", backRightEncoder.getPosition());
+		SmartDashboard.putNumber("Encoder FR Position", frontRightEncoder.getPosition());
+		SmartDashboard.putNumber("Encoder BL Position", backLeftEncoder.getPosition());
+
 		frontRightDriver.set(.3);
 		frontLeftDriver.set(PO, .3);
 		backLeftDriver.set(.3);
@@ -107,11 +113,6 @@ public class Robot extends IterativeRobot {
 		frontLeftRotator.set(PO, -.4);
 		backLeftRotator.set(PO, -.4);
 		backRightRotator.set(PO, .4);
-
-		// SmartDashboard.putNumber("Front Left Encoder Position", frontLeftEncoder.getDirection());
-		// SmartDashboard.putNumber("Front Left Encoder Position", frontRightEncoder.getDirection());
-		// SmartDashboard.putNumber("Front Left Encoder Position", backLeftEncoder.getDirection());
-		// SmartDashboard.putNumber("Front Left Encoder Position", backRightEncoder.getDirection());
 
     }
     
