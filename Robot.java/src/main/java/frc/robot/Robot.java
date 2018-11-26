@@ -69,6 +69,7 @@ public class Robot extends IterativeRobot {
 		frontLeftEncoder.setReverseDirection(true);
 		frontLeftEncoder.setSamplesToAverage(7);
 
+<<<<<<< HEAD
 		frontRightEncoder = new Encoder(8, 9, false, Encoder.EncodingType.k4X);
 		frontLeftEncoder.setMaxPeriod(.1);
 		frontLeftEncoder.setMinRate(10);
@@ -89,6 +90,28 @@ public class Robot extends IterativeRobot {
 		frontLeftEncoder.setDistancePerPulse(5);
 		frontLeftEncoder.setReverseDirection(true);
 		frontLeftEncoder.setSamplesToAverage(7);
+=======
+		Encoder frontRightEncoder = new Encoder(0, 1, true, Encoder.EncodingType.k4X);
+		frontRightEncoder.setMaxPeriod(.1);
+		frontRightEncoder.setMinRate(10);
+		frontRightEncoder.setDistancePerPulse(5);
+		frontRightEncoder.setReverseDirection(true);
+		frontRightEncoder.setSamplesToAverage(7);
+
+		Encoder backLeftEncoder = new Encoder(6, 7, false, Encoder.EncodingType.k4X);
+		backLeftEncoder.setMaxPeriod(.1);
+		backLeftEncoder.setMinRate(10);
+		backLeftEncoder.setDistancePerPulse(5);
+		backLeftEncoder.setReverseDirection(true);
+		backLeftEncoder.setSamplesToAverage(7);
+
+		Encoder backRightEncoder = new Encoder(4, 5, true, Encoder.EncodingType.k4X);
+		backRightEncoder.setMaxPeriod(.1);
+		backRightEncoder.setMinRate(10);
+		backRightEncoder.setDistancePerPulse(5);
+		backRightEncoder.setReverseDirection(true);
+		backRightEncoder.setSamplesToAverage(7);
+>>>>>>> f81320c7760e4b6005dd4de2c5ddf473ac1ea5e1
     }
     
     public void teleopInit(){
@@ -109,6 +132,12 @@ public class Robot extends IterativeRobot {
 	}
     
     public void testPeriodic() {
+		SmartDashboard.putNumber("Rotation", ahrs.getYaw());
+		SmartDashboard.putNumber("Encoder FL Position", frontLeftEncoder.getPosition());
+		SmartDashboard.putNumber("Encoder BR Position", backRightEncoder.getPosition());
+		SmartDashboard.putNumber("Encoder FR Position", frontRightEncoder.getPosition());
+		SmartDashboard.putNumber("Encoder BL Position", backLeftEncoder.getPosition());
+
 		frontRightDriver.set(.3);
 		frontLeftDriver.set(PO, .3);
 		backLeftDriver.set(.3);
@@ -119,9 +148,12 @@ public class Robot extends IterativeRobot {
 		backLeftRotator.set(PO, -.4);
 		backRightRotator.set(PO, .4);
 
+<<<<<<< HEAD
 		SmartDashboard.putNumber("Rotation", ahrs.getYaw());
 
 		//SmartDashboard.putNumber("Front Left Encoder Position", frontLeftEncoder.getDirection());
+=======
+>>>>>>> f81320c7760e4b6005dd4de2c5ddf473ac1ea5e1
     }
     
     public void autonomousInit() {
