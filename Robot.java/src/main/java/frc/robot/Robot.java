@@ -47,6 +47,10 @@ public class Robot extends IterativeRobot {
 		frontLeftDriver = new TalonSRX(3);
 		backRightDriver = new Talon(0);
 		backLeftDriver = new Talon(2);
+
+		frontLeftEncoder = new Encoder(6, 7, true, Encoder.EncodingType.k4X);
+		frontRightEncoder = new Encoder(8, 9, false, Encoder.EncodingType.k4X);
+		backRightEncoder = new Encoder(4, 5, false, Encoder.EncodingType.k4X);
     	 
 		double power = 0;
 		
@@ -62,36 +66,37 @@ public class Robot extends IterativeRobot {
 		backLeftDriver.set(power);
 		backRightDriver.set(power);
 
-		frontLeftEncoder = new Encoder(6, 7, true, Encoder.EncodingType.k4X);
-		
-
-
-		frontRightEncoder = new Encoder(8, 9, false, Encoder.EncodingType.k4X);
-		
-		backLeftEncoder = new Encoder(2, 3, false, Encoder.EncodingType.k4X);
-		frontLeftEncoder.setMaxPeriod(.1);
-		frontLeftEncoder.setMinRate(10);
-		frontLeftEncoder.setDistancePerPulse((360/7)*1.2);
-		frontLeftEncoder.setReverseDirection(true);
-		frontLeftEncoder.setSamplesToAverage(7);
-
-		backRightEncoder = new Encoder(4, 5, false, Encoder.EncodingType.k4X);
-		frontLeftEncoder.setMaxPeriod(.1);
-		frontLeftEncoder.setMinRate(10);
-		frontLeftEncoder.setDistancePerPulse((360/7)*1.2);
-		frontLeftEncoder.setReverseDirection(true);
-		frontLeftEncoder.setSamplesToAverage(7);
     }
     
     public void teleopInit(){
 		frontLeftEncoder.reset();
+		frontRightEncoder.reset();
+		backLeftEncoder.reset();
+		backRightEncoder.reset();
 
 		frontLeftEncoder.setMaxPeriod(.1);
 		frontLeftEncoder.setMinRate(10);
 		frontLeftEncoder.setDistancePerPulse(1/1.2);
-		//frontLeftEncoder.setDistancePerCount(1/1.2);
 		frontLeftEncoder.setReverseDirection(true);
-		//frontLeftEncoder.setSamplesToAverage(7);
+		frontLeftEncoder.setSamplesToAverage(7);
+
+		frontRightEncoder.setMaxPeriod(.1);
+		frontRightEncoder.setMinRate(10);
+		frontRightEncoder.setDistancePerPulse(1/1.2);
+		frontRightEncoder.setReverseDirection(true);
+		frontRightEncoder.setSamplesToAverage(7);
+
+		backLeftEncoder.setMaxPeriod(.1);
+		backLeftEncoder.setMinRate(10);
+		backLeftEncoder.setDistancePerPulse(1/1.2);
+		backLeftEncoder.setReverseDirection(true);
+		backLeftEncoder.setSamplesToAverage(7);
+
+		backRightEncoder.setMaxPeriod(.1);
+		backRightEncoder.setMinRate(10);
+		backRightEncoder.setDistancePerPulse(1/1.2);
+		backRightEncoder.setReverseDirection(true);
+		backRightEncoder.setSamplesToAverage(7);
 
 		
 
@@ -108,12 +113,13 @@ public class Robot extends IterativeRobot {
 		// backLeftRotator.set(PO, -.4);
 		// backRightRotator.set(PO, .4);
 		SmartDashboard.putNumber("Front Left Encoder Position", frontLeftEncoder.getDistance());
-		SmartDashboard.putNumber("Count", frontLeftEncoder.get());
+		SmartDashboard.putNumber("Front Right Encoder Position", frontRightEncoder.getDistance());
+		SmartDashboard.putNumber("Back Left Encoder Position", backLeftEncoder.getDistance());
+		SmartDashboard.putNumber("Back Right Encoder Position", backRightEncoder.getDistance());
 		SmartDashboard.putNumber("Rotation", ahrs.getYaw());	   
 	}
     
     public void testPeriodic() {
-
     }
     
     public void autonomousInit() {
