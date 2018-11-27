@@ -51,6 +51,7 @@ public class Robot extends IterativeRobot {
 		frontLeftEncoder = new Encoder(6, 7, true, Encoder.EncodingType.k4X);
 		frontRightEncoder = new Encoder(8, 9, false, Encoder.EncodingType.k4X);
 		backRightEncoder = new Encoder(4, 5, false, Encoder.EncodingType.k4X);
+		backLeftEncoder = new Encoder(4, 5, false, Encoder.EncodingType.k4X);
     	 
 		double power = 0;
 		
